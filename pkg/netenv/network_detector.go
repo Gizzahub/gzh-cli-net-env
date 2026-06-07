@@ -119,8 +119,8 @@ func (nd *NetworkDetector) getWiFiSSIDLinux(ctx context.Context) (string, error)
 
 	lines := strings.Split(string(output), "\n")
 	for _, line := range lines {
-		if strings.HasPrefix(line, "yes:") {
-			return strings.TrimPrefix(line, "yes:"), nil
+		if after, ok := strings.CutPrefix(line, "yes:"); ok {
+			return after, nil
 		}
 	}
 
