@@ -26,7 +26,8 @@ fmt: ## Format code
 	gofmt -w .
 
 lint: ## Run linter
-	golangci-lint run ./... 2>/dev/null || go vet ./...
+	@command -v golangci-lint >/dev/null 2>&1 || { echo "golangci-lint not installed. Run: make install-tools" >&2; exit 1; }
+	golangci-lint run ./...
 
 tidy: ## Tidy go modules
 	go mod tidy
