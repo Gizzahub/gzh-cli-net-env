@@ -1,6 +1,15 @@
 # CLAUDE.md - gzh-cli-net-env
 
-Network Environment Management Library for gzh-cli ecosystem.
+LLM-optimized guidance for gzh-cli-net-env.
+
+**Module**: `github.com/gizzahub/gzh-cli-net-env` | **Binary root cmd**: `net-env` | **Go**: 1.23
+
+Network Environment Management Library for the gzh-cli ecosystem: detects the
+active network (WiFi SSID / IP / gateway / DNS) and manages named profiles.
+
+> **Status**: Local-only repo — no GitHub remote yet. Registered in the devbox
+> `.gz-project.yaml` (path-based) but absent from `.gz-git.yaml` (needs a url).
+> Do not assume `git push`/`gz-git workspace sync` targets exist for this repo.
 
 ## Quick Start
 
@@ -8,7 +17,31 @@ Network Environment Management Library for gzh-cli ecosystem.
 make build     # Build
 make test      # Run tests
 make check     # fmt + lint + test
+make tidy      # go mod tidy
 ```
+
+## Commands
+
+| Command                 | Purpose                                    |
+|-------------------------|--------------------------------------------|
+| `net-env status`        | Show current network state                 |
+| `net-env watch`         | Monitor network changes                    |
+| `net-env profile list`  | List saved profiles                        |
+| `net-env profile show <name>` | Show one profile                     |
+| `net-env profile init`  | Create/initialize a profile                |
+| `net-env profile delete <name>` | Delete a profile                   |
+
+## Absolute Rules
+
+**DO**: Run `make check` before every commit · Keep platform branches (macOS/Linux)
+symmetric in `network_detector.go` · Store profiles as YAML under the config dir.
+
+**DON'T**: Assume a remote exists (local-only) · Hard-code the config path — honor
+`GZH_CONFIG_DIR` · Duplicate utilities that belong in `gzh-cli-core` (see below).
+
+> **Known gap**: Unlike sibling feature libs, this module does **not** yet depend on
+> `gzh-cli-core` (deps are only cobra + yaml.v3). Prefer migrating shared logic
+> (config dir, logger, CLI output) to `gzh-cli-core` rather than growing local copies.
 
 ## Architecture
 
