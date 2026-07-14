@@ -89,7 +89,12 @@ func (nd *NetworkDetector) getWiFiSSIDMacOS(ctx context.Context) (string, error)
 		return "", err
 	}
 
-	lines := strings.Split(string(output), "\n")
+	return parseSSIDFromAirportOutput(string(output))
+}
+
+// parseSSIDFromAirportOutput extracts the SSID from macOS airport utility output.
+func parseSSIDFromAirportOutput(output string) (string, error) {
+	lines := strings.Split(output, "\n")
 	for _, line := range lines {
 		if strings.Contains(line, " SSID:") {
 			parts := strings.Split(line, ":")
@@ -105,8 +110,7 @@ func (nd *NetworkDetector) getWiFiSSIDMacOS(ctx context.Context) (string, error)
 func (nd *NetworkDetector) getWiFiSSIDLinux(ctx context.Context) (string, error) {
 	cmd := exec.CommandContext(ctx, "iwgetid", "-r")
 	if output, err := cmd.Output(); err == nil {
-		ssid := strings.TrimSpace(string(output))
-		if ssid != "" {
+		if ssid := parseSSIDFromIwgetidOutput(string(output)); ssid != "" {
 			return ssid, nil
 		}
 	}
@@ -117,7 +121,15 @@ func (nd *NetworkDetector) getWiFiSSIDLinux(ctx context.Context) (string, error)
 		return "", err
 	}
 
-	lines := strings.Split(string(output), "\n")
+	return parseSSIDFromNmcliOutput(string(output))
+}
+
+func parseSSIDFromIwgetidOutput(output string) string {
+	return strings.TrimSpace(output)
+}
+
+func parseSSIDFromNmcliOutput(output string) (string, error) {
+	lines := strings.Split(output, "\n")
 	for _, line := range lines {
 		if after, ok := strings.CutPrefix(line, "yes:"); ok {
 			return after, nil
@@ -157,14 +169,17 @@ func (nd *NetworkDetector) getDefaultGateway(ctx context.Context) (string, error
 		}
 	}
 
-	lines := strings.Split(string(output), "\n")
+	return parseGatewayFromRouteOutput(string(output))
+}
+
+func parseGatewayFromRouteOutput(output string) (string, error) {
+	lines := strings.Split(output, "\n")
 	for _, line := range lines {
-		if strings.Contains(line, "gateway") || strings.Contains(line, "via") {
-			fields := strings.Fields(line)
-			for i, field := range fields {
-				if (field == "gateway" || field == "via") && i+1 < len(fields) {
-					return fields[i+1], nil
-				}
+		fields := strings.Fields(line)
+		for i, field := range fields {
+			key := strings.TrimSuffix(field, ":")
+			if (key == "gateway" || key == "via") && i+1 < len(fields) {
+				return fields[i+1], nil
 			}
 		}
 	}
@@ -182,8 +197,12 @@ func (nd *NetworkDetector) getDNSServers() ([]string, error) {
 		return nil, err
 	}
 
+	return parseDNSServers(string(content)), nil
+}
+
+func parseDNSServers(content string) []string {
 	var servers []string
-	lines := strings.Split(string(content), "\n")
+	lines := strings.Split(content, "\n")
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if strings.HasPrefix(line, "nameserver") {
@@ -194,7 +213,7 @@ func (nd *NetworkDetector) getDNSServers() ([]string, error) {
 		}
 	}
 
-	return servers, nil
+	return servers
 }
 
 func (nd *NetworkDetector) findBestMatchingProfile(networkInfo *NetworkInfo) *NetworkProfile {
