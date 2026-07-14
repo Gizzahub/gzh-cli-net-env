@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/gizzahub/gzh-cli-core/config"
 	"github.com/gizzahub/gzh-cli-net-env/pkg/netenv"
 )
 
@@ -37,7 +38,7 @@ Examples:
 }
 
 func runWatch(cmd *cobra.Command, interval time.Duration) error {
-	configDir := netenv.GetConfigDirectory()
+	configDir := config.GetConfigDirectory()
 
 	profileManager := netenv.NewProfileManager(configDir)
 	if err := profileManager.LoadProfiles(); err != nil {

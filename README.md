@@ -6,7 +6,7 @@
 manages named network profiles stored as YAML. It ships as a library consumed by
 the main `gzh-cli` wrapper and as a standalone command.
 
-**Module**: `github.com/gizzahub/gzh-cli-net-env` · **Root cmd**: `net-env` · **Go**: 1.23
+**Module**: `github.com/gizzahub/gzh-cli-net-env` · **Root cmd**: `net-env` · **Go**: 1.25.7
 
 > **Status**: Local-only repository — no public GitHub remote yet. It is registered
 > in the devbox `.gz-project.yaml` (path-based) but not in `.gz-git.yaml`.
@@ -84,6 +84,5 @@ make lint      # lint
 make tidy      # go mod tidy
 ```
 
-> **Note**: This module does not yet depend on `gzh-cli-core`. Prefer migrating
-> shared utilities (config dir, logger, CLI output) into `gzh-cli-core` rather
-> than growing local copies. See `CLAUDE.md`.
+> **Note**: This module depends on `gzh-cli-core` for shared utilities (config
+> directory resolution). Import `github.com/gizzahub/gzh-cli-core/config`.

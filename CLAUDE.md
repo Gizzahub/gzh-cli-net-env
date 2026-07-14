@@ -2,7 +2,7 @@
 
 LLM-optimized guidance for gzh-cli-net-env.
 
-**Module**: `github.com/gizzahub/gzh-cli-net-env` | **Binary root cmd**: `net-env` | **Go**: 1.23
+**Module**: `github.com/gizzahub/gzh-cli-net-env` | **Binary root cmd**: `net-env` | **Go**: 1.25.7
 
 Network Environment Management Library for the gzh-cli ecosystem: detects the
 active network (WiFi SSID / IP / gateway / DNS) and manages named profiles.
@@ -37,11 +37,11 @@ make tidy      # go mod tidy
 symmetric in `network_detector.go` · Store profiles as YAML under the config dir.
 
 **DON'T**: Assume a remote exists (local-only) · Hard-code the config path — honor
-`GZH_CONFIG_DIR` · Duplicate utilities that belong in `gzh-cli-core` (see below).
+`GZH_CONFIG_DIR` · Duplicate utilities that belong in `gzh-cli-core`.
 
-> **Known gap**: Unlike sibling feature libs, this module does **not** yet depend on
-> `gzh-cli-core` (deps are only cobra + yaml.v3). Prefer migrating shared logic
-> (config dir, logger, CLI output) to `gzh-cli-core` rather than growing local copies.
+> **Core dependency**: This module depends on `gzh-cli-core` for config directory
+> resolution (`config.GetConfigDirectory`, `config.EnsureConfigDirectory`). Import
+> `github.com/gizzahub/gzh-cli-core/config` for shared utilities.
 
 ## Architecture
 
@@ -54,7 +54,7 @@ gzh-cli-net-env/
 │   └── profile.go       # profile subcommand
 └── pkg/netenv/          # Core library packages
     ├── types.go         # NetworkProfile, ComponentStatus, etc.
-    ├── utils.go         # Config directory utilities
+    ├── utils.go         # Profile path helpers (delegates to gzh-cli-core/config)
     ├── network_detector.go  # WiFi SSID / IP / gateway detection
     └── profile_manager.go   # YAML-based profile CRUD
 ```
@@ -84,4 +84,4 @@ Override with `GZH_CONFIG_DIR` environment variable.
 
 ## Module
 
-`github.com/gizzahub/gzh-cli-net-env` — Go 1.23+
+`github.com/gizzahub/gzh-cli-net-env` — Go 1.25.7+

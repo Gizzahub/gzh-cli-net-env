@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/gizzahub/gzh-cli-core/config"
 	"github.com/gizzahub/gzh-cli-net-env/pkg/netenv"
 )
 
@@ -173,5 +174,5 @@ func newProfileDeleteCmd() *cobra.Command {
 }
 
 func newProfileManager() *netenv.ProfileManager {
-	return netenv.NewProfileManager(netenv.GetConfigDirectory())
+	return netenv.NewProfileManager(config.GetConfigDirectory())
 }
