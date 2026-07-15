@@ -8,8 +8,9 @@ the main `gzh-cli` wrapper and as a standalone command.
 
 **Module**: `github.com/gizzahub/gzh-cli-net-env` · **Root cmd**: `net-env` · **Go**: 1.25.7
 
-> **Status**: Local-only repository — no public GitHub remote yet. It is registered
-> in the devbox `.gz-project.yaml` (path-based) but not in `.gz-git.yaml`.
+> **Status**: Remote `github.com/Gizzahub/gzh-cli-net-env` exists. Registered in the
+> devbox `.gz-project.yaml` (path-based); may still be absent from `.gz-git.yaml`
+> until workspace sync registration is updated.
 
 ## Features
 

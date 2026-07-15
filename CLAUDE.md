@@ -7,9 +7,9 @@ LLM-optimized guidance for gzh-cli-net-env.
 Network Environment Management Library for the gzh-cli ecosystem: detects the
 active network (WiFi SSID / IP / gateway / DNS) and manages named profiles.
 
-> **Status**: Local-only repo — no GitHub remote yet. Registered in the devbox
-> `.gz-project.yaml` (path-based) but absent from `.gz-git.yaml` (needs a url).
-> Do not assume `git push`/`gz-git workspace sync` targets exist for this repo.
+> **Status**: Remote `github.com/Gizzahub/gzh-cli-net-env` exists. Registered in the
+> devbox `.gz-project.yaml` (path-based); may still be absent from `.gz-git.yaml`
+> until workspace sync registration is updated.
 
 ## Quick Start
 
@@ -36,8 +36,8 @@ make tidy      # go mod tidy
 **DO**: Run `make check` before every commit · Keep platform branches (macOS/Linux)
 symmetric in `network_detector.go` · Store profiles as YAML under the config dir.
 
-**DON'T**: Assume a remote exists (local-only) · Hard-code the config path — honor
-`GZH_CONFIG_DIR` · Duplicate utilities that belong in `gzh-cli-core`.
+**DON'T**: Hard-code the config path — honor `GZH_CONFIG_DIR` · Duplicate utilities
+that belong in `gzh-cli-core`.
 
 > **Core dependency**: This module depends on `gzh-cli-core` for config directory
 > resolution (`config.GetConfigDirectory`, `config.EnsureConfigDirectory`). Import
