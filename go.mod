@@ -1,6 +1,6 @@
 module github.com/gizzahub/gzh-cli-net-env
 
-go 1.25.7
+go 1.26
 
 require (
 	github.com/gizzahub/gzh-cli-core v0.0.0-20260714022411-7cf07cfcc57f
