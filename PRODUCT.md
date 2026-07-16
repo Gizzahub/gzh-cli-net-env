@@ -97,11 +97,10 @@ ______________________________________________________________________
 - **미비**: `profile delete`는 확인 프롬프트·백업 없이 즉시 삭제한다;
   `ProxyAuth`의 자격증명은 평문 YAML로 저장된다 (`${PROXY_USER}` 확장 코드 없음)
 
-**Baseline (진행 중)**
+**Baseline**
 
-- `.golangci.yml`·`LICENSE` 미보유 (GUIDELINES §4 격차). 전 소스에
-  `SPDX-License-Identifier: MIT` 헤더가 있으나 LICENSE 파일이 없어 라이선스 주장이
-  뒷받침되지 않는다 — 다음 작업 시 보완
+- GUIDELINES §3 베이스라인 충족 — `Makefile`·`.golangci.yml`(v2)·CI·`LICENSE`(MIT,
+  소스의 SPDX 헤더와 일치)·문서·본 PRODUCT.md 보유
 
 ______________________________________________________________________
 
