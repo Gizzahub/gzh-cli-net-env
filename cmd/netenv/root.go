@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Archmagece
 // SPDX-License-Identifier: MIT
 
+// Package netenv provides the CLI commands for network environment management.
 package netenv
 
 import (

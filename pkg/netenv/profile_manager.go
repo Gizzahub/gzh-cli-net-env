@@ -64,6 +64,7 @@ func (pm *ProfileManager) LoadProfiles() error {
 }
 
 func (pm *ProfileManager) loadProfile(filePath string) error {
+	// #nosec G304 -- path is built from configDir + directory entry name (not user input)
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to read profile file: %w", err)
@@ -179,6 +180,7 @@ func (pm *ProfileManager) ExportProfile(name, outputPath string) error {
 
 // ImportProfile imports a profile from a file.
 func (pm *ProfileManager) ImportProfile(filePath string) error {
+	// #nosec G304 -- path is an explicit user-supplied import path for a local profile file
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to read import file: %w", err)
@@ -200,8 +202,8 @@ func (pm *ProfileManager) CreateDefaultProfiles() error {
 			Description: "Home network profile",
 			Priority:    50,
 			Conditions: []NetworkCondition{
-				{Type: "wifi_ssid", Value: "Home-WiFi", Operator: "equals"},
-				{Type: "ip_range", Value: "192.168.1.0/24", Operator: "equals"},
+				{Type: conditionTypeWiFiSSID, Value: "Home-WiFi", Operator: conditionOpEquals},
+				{Type: conditionTypeIPRange, Value: "192.168.1.0/24", Operator: conditionOpEquals},
 			},
 			Components: NetworkComponents{
 				DNS:   &DNSConfig{Servers: []string{"1.1.1.1", "1.0.0.1"}},
@@ -213,8 +215,8 @@ func (pm *ProfileManager) CreateDefaultProfiles() error {
 			Description: "Corporate office network profile",
 			Priority:    100,
 			Conditions: []NetworkCondition{
-				{Type: "wifi_ssid", Value: "Corporate-WiFi", Operator: "equals"},
-				{Type: "ip_range", Value: "10.0.0.0/8", Operator: "equals"},
+				{Type: conditionTypeWiFiSSID, Value: "Corporate-WiFi", Operator: conditionOpEquals},
+				{Type: conditionTypeIPRange, Value: "10.0.0.0/8", Operator: conditionOpEquals},
 			},
 			Components: NetworkComponents{
 				VPN: &VPNConfig{Name: "corp-vpn", Type: "openvpn", AutoConnect: true, Priority: 100},
@@ -222,7 +224,8 @@ func (pm *ProfileManager) CreateDefaultProfiles() error {
 				Proxy: &ProxyConfig{
 					HTTP:  "proxy.corp.com:8080",
 					HTTPS: "proxy.corp.com:8080",
-					Auth:  &ProxyAuth{Username: "${PROXY_USER}", Password: "${PROXY_PASS}"},
+					// #nosec G101 -- placeholder env-var references, not real credentials
+					Auth: &ProxyAuth{Username: "${PROXY_USER}", Password: "${PROXY_PASS}"},
 				},
 			},
 		},
@@ -231,7 +234,7 @@ func (pm *ProfileManager) CreateDefaultProfiles() error {
 			Description: "Public WiFi / Cafe network profile",
 			Priority:    25,
 			Conditions: []NetworkCondition{
-				{Type: "wifi_ssid", Value: "Starbucks", Operator: "contains"},
+				{Type: conditionTypeWiFiSSID, Value: "Starbucks", Operator: conditionOpContains},
 			},
 			Components: NetworkComponents{
 				VPN: &VPNConfig{Name: "personal-vpn", Type: "wireguard", AutoConnect: true, Priority: 100},

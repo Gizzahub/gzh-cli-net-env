@@ -554,10 +554,7 @@ func TestDetectEnvironment(t *testing.T) {
 
 func TestGetCurrentNetworkInfo(t *testing.T) {
 	nd := NewNetworkDetector(nil)
-	info, err := nd.getCurrentNetworkInfo(context.Background())
-	if err != nil {
-		t.Fatalf("getCurrentNetworkInfo() error = %v", err)
-	}
+	info := nd.getCurrentNetworkInfo(context.Background())
 	if info == nil {
 		t.Fatal("expected non-nil info")
 	}

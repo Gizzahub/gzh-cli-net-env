@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Archmagece
 // SPDX-License-Identifier: MIT
 
+// Package tui provides terminal UI helpers for network environment status display.
 package tui
 
 import (
@@ -10,19 +11,23 @@ import (
 	"github.com/gizzahub/gzh-cli-net-env/pkg/netenv"
 )
 
+// Dashboard renders network environment status for the terminal.
 type Dashboard struct {
 	verbose bool
 	width   int
 }
 
+// NewDashboard creates a Dashboard with default width.
 func NewDashboard(verbose bool) *Dashboard {
 	return &Dashboard{verbose: verbose, width: 80}
 }
 
+// NewDashboardWidth creates a Dashboard with a custom width.
 func NewDashboardWidth(verbose bool, width int) *Dashboard {
 	return &Dashboard{verbose: verbose, width: width}
 }
 
+// Render returns a full status dashboard for the given network status.
 func (d *Dashboard) Render(status *netenv.NetworkStatus) string {
 	if status == nil {
 		return d.RenderHeader(nil)
@@ -43,6 +48,7 @@ func (d *Dashboard) Render(status *netenv.NetworkStatus) string {
 	return b.String()
 }
 
+// RenderHeader returns the dashboard header for the active profile.
 func (d *Dashboard) RenderHeader(profile *netenv.NetworkProfile) string {
 	var b strings.Builder
 	b.WriteString(colorCyan)
@@ -72,6 +78,7 @@ func (d *Dashboard) RenderHeader(profile *netenv.NetworkProfile) string {
 	return b.String()
 }
 
+// RenderComponents returns a formatted list of network component statuses.
 func (d *Dashboard) RenderComponents(components netenv.ComponentStatuses) string {
 	var b strings.Builder
 	b.WriteString("  Components:\n")
@@ -114,6 +121,7 @@ func (d *Dashboard) renderComponentLine(name string, s *netenv.ComponentStatus) 
 	return fmt.Sprintf("%s %s%s%s\n", label, colorGray, iconDisconnected+" "+statusStr, colorReset)
 }
 
+// RenderHealth returns a formatted network health summary.
 func (d *Dashboard) RenderHealth(health netenv.HealthStatus) string {
 	var b strings.Builder
 	b.WriteString("\n  ")
@@ -128,6 +136,7 @@ func (d *Dashboard) RenderHealth(health netenv.HealthStatus) string {
 	return b.String()
 }
 
+// RenderIssues returns a formatted list of health issues.
 func (d *Dashboard) RenderIssues(issues []string) string {
 	if len(issues) == 0 {
 		return ""
@@ -146,6 +155,7 @@ func (d *Dashboard) RenderIssues(issues []string) string {
 	return b.String()
 }
 
+// RenderNetworkInfo returns formatted network detection details.
 func (d *Dashboard) RenderNetworkInfo(info *netenv.NetworkInfo) string {
 	if info == nil {
 		return ""

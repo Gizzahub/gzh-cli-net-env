@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Archmagece
 // SPDX-License-Identifier: MIT
 
+// Package netenv provides network environment detection and profile management.
 package netenv
 
 import (
@@ -24,8 +25,8 @@ type NetworkProfile struct {
 	Conditions  []NetworkCondition `yaml:"conditions,omitempty" json:"conditions,omitempty"`
 	Components  NetworkComponents  `yaml:"components" json:"components"`
 	Metadata    map[string]any     `yaml:"metadata,omitempty" json:"metadata,omitempty"`
-	CreatedAt   time.Time          `yaml:"createdAt" json:"createdAt"`
-	UpdatedAt   time.Time          `yaml:"updatedAt" json:"updatedAt"`
+	CreatedAt   time.Time          `yaml:"createdAt" json:"createdAt"` //nolint:tagliatelle // public wire format contract
+	UpdatedAt   time.Time          `yaml:"updatedAt" json:"updatedAt"` //nolint:tagliatelle // public wire format contract
 }
 
 // NetworkCondition defines when a profile should be automatically activated.
@@ -38,7 +39,7 @@ type NetworkCondition struct {
 
 // NetworkComponents contains all network component configurations.
 type NetworkComponents struct {
-	WiFi       *WiFiConfig       `yaml:"wifi,omitempty" json:"wifi,omitempty"`
+	WiFi       *WiFiConfig       `yaml:"wifi,omitempty" json:"wifi,omitempty"` //nolint:tagliatelle // public wire format contract
 	VPN        *VPNConfig        `yaml:"vpn,omitempty" json:"vpn,omitempty"`
 	DNS        *DNSConfig        `yaml:"dns,omitempty" json:"dns,omitempty"`
 	Proxy      *ProxyConfig      `yaml:"proxy,omitempty" json:"proxy,omitempty"`
@@ -57,12 +58,12 @@ type WiFiConfig struct {
 // VPNConfig represents VPN configuration.
 type VPNConfig struct {
 	Name        string            `yaml:"name" json:"name"`
-	Type        string            `yaml:"type" json:"type"` // openvpn, wireguard, cisco, etc.
-	AutoConnect bool              `yaml:"autoConnect,omitempty" json:"autoConnect,omitempty"`
+	Type        string            `yaml:"type" json:"type"`                                   // openvpn, wireguard, cisco, etc.
+	AutoConnect bool              `yaml:"autoConnect,omitempty" json:"autoConnect,omitempty"` //nolint:tagliatelle // public wire format contract
 	Priority    int               `yaml:"priority,omitempty" json:"priority,omitempty"`
 	Config      map[string]string `yaml:"config,omitempty" json:"config,omitempty"`
 	Failover    []string          `yaml:"failover,omitempty" json:"failover,omitempty"`
-	HealthCheck *HealthCheck      `yaml:"healthCheck,omitempty" json:"healthCheck,omitempty"`
+	HealthCheck *HealthCheck      `yaml:"healthCheck,omitempty" json:"healthCheck,omitempty"` //nolint:tagliatelle // public wire format contract
 }
 
 // DNSConfig represents DNS configuration.
@@ -79,7 +80,7 @@ type ProxyConfig struct {
 	HTTP    string            `yaml:"http,omitempty" json:"http,omitempty"`
 	HTTPS   string            `yaml:"https,omitempty" json:"https,omitempty"`
 	FTP     string            `yaml:"ftp,omitempty" json:"ftp,omitempty"`
-	NoProxy []string          `yaml:"noProxy,omitempty" json:"noProxy,omitempty"`
+	NoProxy []string          `yaml:"noProxy,omitempty" json:"noProxy,omitempty"` //nolint:tagliatelle // public wire format contract
 	Auth    *ProxyAuth        `yaml:"auth,omitempty" json:"auth,omitempty"`
 	Config  map[string]string `yaml:"config,omitempty" json:"config,omitempty"`
 }
@@ -132,12 +133,12 @@ type NetworkStatus struct {
 	Components ComponentStatuses `json:"components"`
 	Health     HealthStatus      `json:"health"`
 	Metrics    *NetworkMetrics   `json:"metrics,omitempty"`
-	LastSwitch time.Time         `json:"lastSwitch"`
+	LastSwitch time.Time         `json:"lastSwitch"` //nolint:tagliatelle // public wire format contract
 }
 
 // ComponentStatuses contains status for each network component.
 type ComponentStatuses struct {
-	WiFi       *ComponentStatus `json:"wifi,omitempty"`
+	WiFi       *ComponentStatus `json:"wifi,omitempty"` //nolint:tagliatelle // public wire format contract
 	VPN        *ComponentStatus `json:"vpn,omitempty"`
 	DNS        *ComponentStatus `json:"dns,omitempty"`
 	Proxy      *ComponentStatus `json:"proxy,omitempty"`
@@ -151,7 +152,7 @@ type ComponentStatus struct {
 	Status    string         `json:"status"`
 	Details   map[string]any `json:"details,omitempty"`
 	Error     string         `json:"error,omitempty"`
-	LastCheck time.Time      `json:"lastCheck"`
+	LastCheck time.Time      `json:"lastCheck"` //nolint:tagliatelle // public wire format contract
 }
 
 // HealthStatus represents overall network health.
@@ -166,7 +167,7 @@ type HealthStatus struct {
 type NetworkMetrics struct {
 	Latency    time.Duration `json:"latency"`
 	Bandwidth  *Bandwidth    `json:"bandwidth,omitempty"`
-	PacketLoss float64       `json:"packetLoss"`
+	PacketLoss float64       `json:"packetLoss"` //nolint:tagliatelle // public wire format contract
 	Jitter     time.Duration `json:"jitter,omitempty"`
 }
 
@@ -178,11 +179,11 @@ type Bandwidth struct {
 
 // NetworkInfo contains current network environment information.
 type NetworkInfo struct {
-	WiFiSSID       string    `json:"wifiSsid,omitempty"`
-	LocalIPs       []string  `json:"localIps,omitempty"`
+	WiFiSSID       string    `json:"wifiSsid,omitempty"` //nolint:tagliatelle // public wire format contract
+	LocalIPs       []string  `json:"localIps,omitempty"` //nolint:tagliatelle // public wire format contract
 	Hostname       string    `json:"hostname,omitempty"`
-	DefaultGateway string    `json:"defaultGateway,omitempty"`
-	DNSServers     []string  `json:"dnsServers,omitempty"`
+	DefaultGateway string    `json:"defaultGateway,omitempty"` //nolint:tagliatelle // public wire format contract
+	DNSServers     []string  `json:"dnsServers,omitempty"`     //nolint:tagliatelle // public wire format contract
 	Timestamp      time.Time `json:"timestamp"`
 }
 

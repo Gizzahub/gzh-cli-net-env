@@ -106,7 +106,7 @@ func printStatusTable(status *netenv.NetworkStatus, verbose bool) error {
 	printComponent("Proxy", status.Components.Proxy)
 
 	healthStr := status.Health.Status
-	if len(healthStr) > 0 {
+	if healthStr != "" {
 		healthStr = strings.ToUpper(healthStr[:1]) + strings.ToLower(healthStr[1:])
 	}
 	fmt.Printf("\nNetwork Health: %s", healthStr)

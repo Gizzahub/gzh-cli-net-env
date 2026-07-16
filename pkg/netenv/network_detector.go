@@ -18,6 +18,14 @@ const (
 	platformWindows = "windows"
 	platformDarwin  = "darwin"
 	platformLinux   = "linux"
+
+	conditionTypeWiFiSSID = "wifi_ssid"
+	conditionTypeIPRange  = "ip_range"
+	conditionTypeHostname = "hostname"
+	conditionTypeGateway  = "gateway"
+	conditionOpContains   = "contains"
+	conditionOpMatches    = "matches"
+	conditionOpEquals     = "equals"
 )
 
 // NetworkDetector handles automatic network environment detection.
@@ -34,16 +42,12 @@ func NewNetworkDetector(profiles []NetworkProfile) *NetworkDetector {
 
 // DetectEnvironment automatically detects the current network environment.
 func (nd *NetworkDetector) DetectEnvironment(ctx context.Context) (*NetworkProfile, error) {
-	networkInfo, err := nd.getCurrentNetworkInfo(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get network info: %w", err)
-	}
-
+	networkInfo := nd.getCurrentNetworkInfo(ctx)
 	bestProfile := nd.findBestMatchingProfile(networkInfo)
 	return bestProfile, nil
 }
 
-func (nd *NetworkDetector) getCurrentNetworkInfo(ctx context.Context) (*NetworkInfo, error) {
+func (nd *NetworkDetector) getCurrentNetworkInfo(ctx context.Context) *NetworkInfo {
 	info := &NetworkInfo{
 		Timestamp: time.Now(),
 	}
@@ -68,7 +72,7 @@ func (nd *NetworkDetector) getCurrentNetworkInfo(ctx context.Context) (*NetworkI
 		info.DNSServers = dns
 	}
 
-	return info, nil
+	return info
 }
 
 func (nd *NetworkDetector) getWiFiSSID(ctx context.Context) (string, error) {
@@ -236,21 +240,21 @@ func (nd *NetworkDetector) scoreProfile(profile *NetworkProfile, networkInfo *Ne
 
 	for _, condition := range profile.Conditions {
 		switch condition.Type {
-		case "wifi_ssid":
+		case conditionTypeWiFiSSID:
 			if nd.matchCondition(condition, networkInfo.WiFiSSID) {
 				score += 100
 			}
-		case "ip_range":
+		case conditionTypeIPRange:
 			for _, ip := range networkInfo.LocalIPs {
 				if nd.matchIPRange(condition.Value, ip) {
 					score += 50
 				}
 			}
-		case "hostname":
+		case conditionTypeHostname:
 			if nd.matchCondition(condition, networkInfo.Hostname) {
 				score += 30
 			}
-		case "gateway":
+		case conditionTypeGateway:
 			if nd.matchCondition(condition, networkInfo.DefaultGateway) {
 				score += 70
 			}
@@ -263,9 +267,9 @@ func (nd *NetworkDetector) scoreProfile(profile *NetworkProfile, networkInfo *Ne
 
 func (nd *NetworkDetector) matchCondition(condition NetworkCondition, value string) bool {
 	switch condition.Operator {
-	case "contains":
+	case conditionOpContains:
 		return strings.Contains(value, condition.Value)
-	case "matches", "equals", "":
+	case conditionOpMatches, conditionOpEquals, "":
 		return value == condition.Value
 	default:
 		return false

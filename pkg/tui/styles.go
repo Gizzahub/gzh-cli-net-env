@@ -21,7 +21,7 @@ const (
 	iconUnknown      = "[?]"
 )
 
-func statusIcon(active bool, hasError bool) string {
+func statusIcon(active, hasError bool) string {
 	switch {
 	case hasError:
 		return iconWarning
@@ -32,6 +32,7 @@ func statusIcon(active bool, hasError bool) string {
 	}
 }
 
+// FormatStatus returns a colorized status string with an activity icon.
 func FormatStatus(active bool, status string) string {
 	icon := statusIcon(active, false)
 	switch {
@@ -44,6 +45,7 @@ func FormatStatus(active bool, status string) string {
 	}
 }
 
+// FormatHealth returns a colorized health status with score.
 func FormatHealth(status string, score int) string {
 	colored := func(s string, color string) string {
 		return fmt.Sprintf("%s%s (%d/100)%s", color, s, score, colorReset)
@@ -62,6 +64,7 @@ func FormatHealth(status string, score int) string {
 	}
 }
 
+// TruncateString shortens s to maxLen runes, appending "..." when truncated.
 func TruncateString(s string, maxLen int) string {
 	if maxLen <= 0 {
 		return ""
@@ -76,6 +79,7 @@ func TruncateString(s string, maxLen int) string {
 	return string(runes[:maxLen-3]) + "..."
 }
 
+// PadRight pads s with spaces on the right to the given width, or truncates if longer.
 func PadRight(s string, width int) string {
 	runes := []rune(s)
 	if len(runes) >= width {
