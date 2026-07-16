@@ -83,6 +83,11 @@ linters:
     goconst:
       min-len: 3
       min-occurrences: 3
+      # Family standard (task 15, 2026-07-17): tests assert user-facing strings
+      # as literals on purpose. Comparing against a shared constant would pass
+      # even if the constant's value changed, which is exactly what the test
+      # must catch. Production goconst remains fully enforced.
+      ignore-tests: true
 
     gocritic:
       enabled-tags:
