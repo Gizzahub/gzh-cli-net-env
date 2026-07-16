@@ -3,7 +3,7 @@
 **Project**: gzh-cli-net-env (library — `NewRootCmd()`, 바이너리 없음)
 **Doc Type**: Goals + Constraints + Quality Gates
 **Status**: Active
-**Last Updated**: 2026-07-16
+**Last Updated**: 2026-07-17
 
 ______________________________________________________________________
 
@@ -40,9 +40,9 @@ G1. **Detection coverage**
 G2. **Honest status output**
 
 - Target: `status`가 출력하는 컴포넌트는 **전부 실제 감지 결과**여야 한다 (4/4)
-- 현재 **1/4** — proxy만 실데이터. WiFi·DNS·VPN은 하드코딩된 상수를 반환하며
-  (네트워크가 꺼져 있어도 "connected"), 이를 근거로 Health 점수를 계산한다.
-  **이 격차가 본 리포 최우선 과제다.**
+- 현재 **3/4** — WiFi(SSID)·DNS(`/etc/resolv.conf`)·Proxy(env)는 실데이터.
+  VPN은 신뢰 가능한 크로스플랫폼 감지가 없어 `Status: unknown` / `Active: false`를
+  반환하며, Health 점수 계산에서 unknown 컴포넌트는 제외한다.
 
 G3. **Profile matching determinism**
 
@@ -116,7 +116,7 @@ ______________________________________________________________________
 
 **Correctness**
 
-- `status`의 모든 컴포넌트가 실제 감지 결과를 반영한다 (G2 — 현재 미충족)
+- `status`의 모든 컴포넌트가 실제 감지 결과를 반영한다 (G2 — 3/4; VPN unknown 정직 보고)
 
 **Docs**
 

@@ -17,6 +17,16 @@ import (
 	"github.com/gizzahub/gzh-cli-net-env/pkg/netenv"
 )
 
+const (
+	componentStatusConnected    = "connected"
+	componentStatusDisconnected = "disconnected"
+	componentStatusConfigured   = "configured"
+	componentStatusUnconfigured = "unconfigured"
+	componentStatusUnknown      = "unknown"
+	componentStatusEnabled      = "enabled"
+	componentStatusDisabled     = "disabled"
+)
+
 func newStatusCmd() *cobra.Command {
 	var (
 		verbose bool
@@ -146,44 +156,93 @@ func collectStatus(ctx context.Context, detector *netenv.NetworkDetector) *neten
 	status := &netenv.NetworkStatus{
 		LastSwitch: time.Now(),
 		Components: netenv.ComponentStatuses{},
-		Health:     netenv.HealthStatus{Status: "unknown"},
+		Health:     netenv.HealthStatus{Status: componentStatusUnknown},
 	}
 
 	if profile, err := detector.DetectEnvironment(ctx); err == nil && profile != nil {
 		status.Profile = profile
 	}
 
-	status.Components.WiFi = checkWiFiStatus()
+	status.Components.WiFi = checkWiFiStatus(ctx, detector)
 	status.Components.VPN = checkVPNStatus()
-	status.Components.DNS = checkDNSStatus()
+	status.Components.DNS = checkDNSStatus(detector)
 	status.Components.Proxy = checkProxyStatus()
 
 	return status
 }
 
-func checkWiFiStatus() *netenv.ComponentStatus {
+func checkWiFiStatus(ctx context.Context, detector *netenv.NetworkDetector) *netenv.ComponentStatus {
+	now := time.Now()
+	if detector == nil {
+		return &netenv.ComponentStatus{
+			Active:    false,
+			Status:    componentStatusDisconnected,
+			LastCheck: now,
+		}
+	}
+
+	ssid, err := detector.GetWiFiSSID(ctx)
+	if err != nil || ssid == "" {
+		cs := &netenv.ComponentStatus{
+			Active:    false,
+			Status:    componentStatusDisconnected,
+			LastCheck: now,
+		}
+		if err != nil {
+			cs.Error = err.Error()
+		}
+		return cs
+	}
+
 	return &netenv.ComponentStatus{
 		Active:    true,
-		Status:    "connected",
-		Details:   map[string]any{"signal": "good"},
-		LastCheck: time.Now(),
+		Status:    componentStatusConnected,
+		Details:   map[string]any{"ssid": ssid},
+		LastCheck: now,
 	}
 }
 
+// checkVPNStatus reports unknown: no reliable cross-platform VPN detection exists.
 func checkVPNStatus() *netenv.ComponentStatus {
 	return &netenv.ComponentStatus{
 		Active:    false,
-		Status:    "disconnected",
+		Status:    componentStatusUnknown,
 		LastCheck: time.Now(),
 	}
 }
 
-func checkDNSStatus() *netenv.ComponentStatus {
+func checkDNSStatus(detector *netenv.NetworkDetector) *netenv.ComponentStatus {
+	now := time.Now()
+	if detector == nil {
+		return &netenv.ComponentStatus{
+			Active:    false,
+			Status:    componentStatusUnconfigured,
+			LastCheck: now,
+		}
+	}
+
+	servers, err := detector.GetDNSServers()
+	if err != nil {
+		return &netenv.ComponentStatus{
+			Active:    false,
+			Status:    componentStatusUnconfigured,
+			Error:     err.Error(),
+			LastCheck: now,
+		}
+	}
+	if len(servers) == 0 {
+		return &netenv.ComponentStatus{
+			Active:    false,
+			Status:    componentStatusUnconfigured,
+			LastCheck: now,
+		}
+	}
+
 	return &netenv.ComponentStatus{
 		Active:    true,
-		Status:    "configured",
-		Details:   map[string]any{"servers": "system default"},
-		LastCheck: time.Now(),
+		Status:    componentStatusConfigured,
+		Details:   map[string]any{"servers": servers},
+		LastCheck: now,
 	}
 }
 
@@ -192,11 +251,11 @@ func checkProxyStatus() *netenv.ComponentStatus {
 	httpsProxy := os.Getenv("HTTPS_PROXY")
 
 	active := httpProxy != "" || httpsProxy != ""
-	statusStr := "disabled"
+	statusStr := componentStatusDisabled
 	details := make(map[string]any)
 
 	if active {
-		statusStr = "enabled"
+		statusStr = componentStatusEnabled
 		if httpProxy != "" {
 			details["http"] = httpProxy
 		}
@@ -219,14 +278,19 @@ func calculateHealth(components netenv.ComponentStatuses) netenv.HealthStatus {
 	issues := []string{}
 
 	check := func(name string, s *netenv.ComponentStatus) {
-		if s != nil {
-			totalCount++
-			if s.Active {
-				activeCount++
-			}
-			if s.Error != "" {
-				issues = append(issues, fmt.Sprintf("%s: %s", name, s.Error))
-			}
+		if s == nil {
+			return
+		}
+		// Unknown components are excluded from health scoring (not counted healthy).
+		if strings.EqualFold(s.Status, componentStatusUnknown) {
+			return
+		}
+		totalCount++
+		if s.Active {
+			activeCount++
+		}
+		if s.Error != "" {
+			issues = append(issues, fmt.Sprintf("%s: %s", name, s.Error))
 		}
 	}
 

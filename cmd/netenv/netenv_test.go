@@ -149,29 +149,63 @@ func TestCheckProxyStatus_Enabled(t *testing.T) {
 }
 
 func TestCheckWiFiStatus(t *testing.T) {
-	status := checkWiFiStatus()
+	// Given a real detector
+	detector := netenv.NewNetworkDetector(nil)
+
+	// When WiFi status is collected
+	status := checkWiFiStatus(t.Context(), detector)
+
+	// Then status is non-nil and reports a known connected/disconnected state
 	if status == nil {
 		t.Fatal("expected non-nil status")
 	}
-	if !status.Active {
-		t.Error("expected WiFi active")
+	if status.Status != componentStatusConnected && status.Status != componentStatusDisconnected {
+		t.Errorf("status = %q, want connected or disconnected", status.Status)
+	}
+	if status.Status == componentStatusConnected && !status.Active {
+		t.Error("connected WiFi must be Active")
+	}
+	if status.Status == componentStatusDisconnected && status.Active {
+		t.Error("disconnected WiFi must not be Active")
 	}
 }
 
 func TestCheckVPNStatus(t *testing.T) {
+	// Given no reliable cross-platform VPN detection
+	// When VPN status is collected
 	status := checkVPNStatus()
+
+	// Then status is unknown and not active
 	if status == nil {
 		t.Fatal("expected non-nil status")
+	}
+	if status.Status != componentStatusUnknown {
+		t.Errorf("status = %q, want unknown", status.Status)
+	}
+	if status.Active {
+		t.Error("unknown VPN must not be Active")
 	}
 }
 
 func TestCheckDNSStatus(t *testing.T) {
-	status := checkDNSStatus()
+	// Given a real detector
+	detector := netenv.NewNetworkDetector(nil)
+
+	// When DNS status is collected
+	status := checkDNSStatus(detector)
+
+	// Then status is non-nil and reports configured or unconfigured
 	if status == nil {
 		t.Fatal("expected non-nil status")
 	}
-	if !status.Active {
-		t.Error("expected DNS active")
+	if status.Status != componentStatusConfigured && status.Status != componentStatusUnconfigured {
+		t.Errorf("status = %q, want configured or unconfigured", status.Status)
+	}
+	if status.Status == componentStatusConfigured && !status.Active {
+		t.Error("configured DNS must be Active")
+	}
+	if status.Status == componentStatusUnconfigured && status.Active {
+		t.Error("unconfigured DNS must not be Active")
 	}
 }
 
@@ -235,6 +269,39 @@ func TestCalculateHealth(t *testing.T) {
 			wantMinScore:  100,
 			wantMaxScore:  100,
 			wantStatusStr: "excellent",
+		},
+		{
+			name: "unknown excluded from scoring",
+			components: netenv.ComponentStatuses{
+				WiFi:  &netenv.ComponentStatus{Active: true, Status: "connected"},
+				VPN:   &netenv.ComponentStatus{Active: false, Status: "unknown"},
+				DNS:   &netenv.ComponentStatus{Active: true, Status: "configured"},
+				Proxy: &netenv.ComponentStatus{Active: false, Status: "disabled"},
+			},
+			// 2 active of 3 known (VPN unknown excluded) => 66
+			wantMinScore:  66,
+			wantMaxScore:  66,
+			wantStatusStr: "good",
+		},
+		{
+			name: "all unknown yields zero score",
+			components: netenv.ComponentStatuses{
+				VPN: &netenv.ComponentStatus{Active: false, Status: "unknown"},
+			},
+			wantMinScore:  0,
+			wantMaxScore:  0,
+			wantStatusStr: "poor",
+		},
+		{
+			name: "unknown not counted as healthy when others inactive",
+			components: netenv.ComponentStatuses{
+				WiFi: &netenv.ComponentStatus{Active: false, Status: "disconnected"},
+				VPN:  &netenv.ComponentStatus{Active: true, Status: "unknown"}, // Active ignored when unknown
+				DNS:  &netenv.ComponentStatus{Active: false, Status: "unconfigured"},
+			},
+			wantMinScore:  0,
+			wantMaxScore:  0,
+			wantStatusStr: "poor",
 		},
 	}
 
