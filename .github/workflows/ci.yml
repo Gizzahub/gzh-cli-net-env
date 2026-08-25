@@ -16,6 +16,14 @@ jobs:
         with:
           go-version: '1.26.7'
           cache: true
+      - name: Verify Go version
+        run: |
+          expected='go1.26.7'
+          actual="$(go version | awk '{print $3}')"
+          if [ "$actual" != "$expected" ]; then
+            echo "Expected Go $expected, got $actual" >&2
+            exit 1
+          fi
       - name: Test
         run: make test
 
@@ -27,10 +35,18 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.26.7'
+      - name: Verify Go version
+        run: |
+          expected='go1.26.7'
+          actual="$(go version | awk '{print $3}')"
+          if [ "$actual" != "$expected" ]; then
+            echo "Expected Go $expected, got $actual" >&2
+            exit 1
+          fi
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@d583c34f0599d37dbac4a198b9c83201be380893 # v9.3.0
         with:
-          version: latest
+          version: v2.13.1
 
   vulncheck:
     name: Vulncheck
@@ -40,5 +56,13 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.26.7'
+      - name: Verify Go version
+        run: |
+          expected='go1.26.7'
+          actual="$(go version | awk '{print $3}')"
+          if [ "$actual" != "$expected" ]; then
+            echo "Expected Go $expected, got $actual" >&2
+            exit 1
+          fi
       - name: govulncheck
         run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...

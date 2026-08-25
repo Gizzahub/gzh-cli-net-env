@@ -2,7 +2,7 @@
 
 LLM-optimized guidance for gzh-cli-net-env.
 
-**Module**: `github.com/gizzahub/gzh-cli-net-env` | **Binary root cmd**: `net-env` | **Go**: 1.25.7
+**Module**: `github.com/gizzahub/gzh-cli-net-env` | **Binary root cmd**: `net-env` | **Go**: 1.26.7
 
 Network Environment Management Library for the gzh-cli ecosystem: detects the
 active network (WiFi SSID / IP / gateway / DNS) and manages named profiles.
@@ -84,4 +84,4 @@ Override with `GZH_CONFIG_DIR` environment variable.
 
 ## Module
 
-`github.com/gizzahub/gzh-cli-net-env` — Go 1.25.7+
+`github.com/gizzahub/gzh-cli-net-env` — Go 1.26.7+

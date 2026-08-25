@@ -2,6 +2,8 @@ module github.com/gizzahub/gzh-cli-net-env
 
 go 1.26
 
+toolchain go1.26.7
+
 require (
 	github.com/gizzahub/gzh-cli-core v0.0.0-20260714022411-7cf07cfcc57f
 	github.com/spf13/cobra v1.10.2
