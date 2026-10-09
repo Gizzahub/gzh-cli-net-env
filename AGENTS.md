@@ -1,4 +1,4 @@
-# CLAUDE.md - gzh-cli-net-env
+# gzh-cli-net-env
 
 LLM-optimized guidance for gzh-cli-net-env.
 
@@ -43,22 +43,6 @@ that belong in `gzh-cli-core`.
 > **Core dependency**: This module depends on `gzh-cli-core` for config directory
 > resolution (`config.GetConfigDirectory`, `config.EnsureConfigDirectory`). Import
 > `github.com/gizzahub/gzh-cli-core/config` for shared utilities.
-
-## Architecture
-
-```
-gzh-cli-net-env/
-├── cmd/netenv/          # CLI entry point (NewRootCmd)
-│   ├── root.go          # NewRootCmd() — used by gzh-cli wrapper
-│   ├── status.go        # status subcommand
-│   ├── watch.go         # watch subcommand
-│   └── profile.go       # profile subcommand
-└── pkg/netenv/          # Core library packages
-    ├── types.go         # NetworkProfile, ComponentStatus, etc.
-    ├── utils.go         # Profile path helpers (delegates to gzh-cli-core/config)
-    ├── network_detector.go  # WiFi SSID / IP / gateway detection
-    └── profile_manager.go   # YAML-based profile CRUD
-```
 
 ## Key API
 
