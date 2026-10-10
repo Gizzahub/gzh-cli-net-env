@@ -53,39 +53,39 @@ func (nd *NetworkDetector) getCurrentNetworkInfo(ctx context.Context) *NetworkIn
 	}
 
 	if ssid, err := nd.GetWiFiSSID(ctx); err == nil {
-			info.WiFiSSID = ssid
-		}
-
-		if ips, err := nd.getLocalIPs(); err == nil {
-			info.LocalIPs = ips
-		}
-
-		if hostname, err := os.Hostname(); err == nil {
-			info.Hostname = hostname
-		}
-
-		if gateway, err := nd.getDefaultGateway(ctx); err == nil {
-			info.DefaultGateway = gateway
-		}
-
-		if dns, err := nd.GetDNSServers(); err == nil {
-			info.DNSServers = dns
-		}
-
-		return info
+		info.WiFiSSID = ssid
 	}
 
-	// GetWiFiSSID returns the current WiFi SSID for the active interface.
-	func (nd *NetworkDetector) GetWiFiSSID(ctx context.Context) (string, error) {
-		switch runtime.GOOS {
-		case platformDarwin:
-			return nd.getWiFiSSIDMacOS(ctx)
-		case platformLinux:
-			return nd.getWiFiSSIDLinux(ctx)
-		default:
-			return "", fmt.Errorf("unsupported platform: %s", runtime.GOOS)
-		}
+	if ips, err := nd.getLocalIPs(); err == nil {
+		info.LocalIPs = ips
 	}
+
+	if hostname, err := os.Hostname(); err == nil {
+		info.Hostname = hostname
+	}
+
+	if gateway, err := nd.getDefaultGateway(ctx); err == nil {
+		info.DefaultGateway = gateway
+	}
+
+	if dns, err := nd.GetDNSServers(); err == nil {
+		info.DNSServers = dns
+	}
+
+	return info
+}
+
+// GetWiFiSSID returns the current WiFi SSID for the active interface.
+func (nd *NetworkDetector) GetWiFiSSID(ctx context.Context) (string, error) {
+	switch runtime.GOOS {
+	case platformDarwin:
+		return nd.getWiFiSSIDMacOS(ctx)
+	case platformLinux:
+		return nd.getWiFiSSIDLinux(ctx)
+	default:
+		return "", fmt.Errorf("unsupported platform: %s", runtime.GOOS)
+	}
+}
 
 func (nd *NetworkDetector) getWiFiSSIDMacOS(ctx context.Context) (string, error) {
 	cmd := exec.CommandContext(ctx, "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport", "-I")
@@ -192,19 +192,19 @@ func parseGatewayFromRouteOutput(output string) (string, error) {
 	return "", fmt.Errorf("gateway not found")
 }
 
-	// GetDNSServers returns DNS servers from the system resolver configuration.
-	func (nd *NetworkDetector) GetDNSServers() ([]string, error) {
-		if runtime.GOOS == platformWindows {
-			return []string{}, nil
-		}
-
-		content, err := os.ReadFile("/etc/resolv.conf")
-		if err != nil {
-			return nil, err
-		}
-
-		return parseDNSServers(string(content)), nil
+// GetDNSServers returns DNS servers from the system resolver configuration.
+func (nd *NetworkDetector) GetDNSServers() ([]string, error) {
+	if runtime.GOOS == platformWindows {
+		return []string{}, nil
 	}
+
+	content, err := os.ReadFile("/etc/resolv.conf")
+	if err != nil {
+		return nil, err
+	}
+
+	return parseDNSServers(string(content)), nil
+}
 
 func parseDNSServers(content string) []string {
 	var servers []string
