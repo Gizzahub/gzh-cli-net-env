@@ -14,11 +14,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: '1.26.7'
+          go-version: '1.27.3'
           cache: true
       - name: Verify Go version
         run: |
-          expected='go1.26.7'
+          expected='go1.27.3'
           actual="$(go version | awk '{print $3}')"
           if [ "$actual" != "$expected" ]; then
             echo "Expected Go $expected, got $actual" >&2
@@ -34,10 +34,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: '1.26.7'
+          go-version: '1.27.3'
       - name: Verify Go version
         run: |
-          expected='go1.26.7'
+          expected='go1.27.3'
           actual="$(go version | awk '{print $3}')"
           if [ "$actual" != "$expected" ]; then
             echo "Expected Go $expected, got $actual" >&2
@@ -55,10 +55,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: '1.26.7'
+          go-version: '1.27.3'
       - name: Verify Go version
         run: |
-          expected='go1.26.7'
+          expected='go1.27.3'
           actual="$(go version | awk '{print $3}')"
           if [ "$actual" != "$expected" ]; then
             echo "Expected Go $expected, got $actual" >&2
