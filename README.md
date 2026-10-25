@@ -4,9 +4,9 @@
 
 `net-env` inspects the active network — WiFi SSID, IP, gateway, and DNS — and
 manages named network profiles stored as YAML. It ships as a library consumed by
-the main `gzh-cli` wrapper and as a standalone command.
+the main `gzh-cli` wrapper; it does not provide a standalone executable.
 
-**Module**: `github.com/gizzahub/gzh-cli-net-env` · **Root cmd**: `net-env` · **Go**: 1.25.7
+**Module**: `github.com/gizzahub/gzh-cli-net-env` · **Root cmd**: `net-env` · **Go**: 1.26
 
 > **Status**: Remote `github.com/Gizzahub/gzh-cli-net-env` exists. Registered in the
 > devbox `.gz-project.yaml` (path-based); may still be absent from `.gz-git.yaml`
