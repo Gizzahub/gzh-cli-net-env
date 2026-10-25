@@ -1,0 +1,5 @@
+# CE task runtime: track only the root declaration. ~/.gitignore_global ignores
+# .ce/, so the root directory is re-included and its other contents re-ignored.
+!/.ce/
+/.ce/*
+!/.ce/task-runtime.yaml
