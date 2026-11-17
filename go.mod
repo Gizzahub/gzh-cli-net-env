@@ -2,7 +2,7 @@ module github.com/gizzahub/gzh-cli-net-env
 
 go 1.26
 
-toolchain go1.27.3
+toolchain go1.27.4
 
 require (
 	github.com/gizzahub/gzh-cli-core v0.1.0
